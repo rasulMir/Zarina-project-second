@@ -8,7 +8,7 @@ import fileinclude from "gulp-file-include";
 // gulp replace
 import replace from "gulp-replace";
 // gulp imagemin
-import imagemin from 'gulp-imagemin';
+import imagemin from "gulp-imagemin";
 // plumber
 import plumber from "gulp-plumber";
 // notify
@@ -40,220 +40,226 @@ const sass = gulpSass(dartSass);
 
 // delete build folder
 const reset = async () => {
-  return deleteAsync(buildFolder);
+    return deleteAsync(buildFolder);
 };
 
 // copy img folder with images
 const copyImg = () => {
-  return gulp
-    .src(`${srcFolder}/img/**/*.*`)
-    .pipe(
-      ifPlugin(isBuild, imagemin([
-        imagemin.gifsicle({interlaced: true}),
-        imagemin.mozjpeg({quality: 80, progressive: true}),
-        imagemin.optipng({optimizationLevel: 5}),
-        imagemin.svgo({
-            plugins: [
-                {removeViewBox: true},
-                {cleanupIDs: false}
-            ]
-        })
-    ]))
-    )
-    .pipe(gulp.dest(`${buildFolder}/img`));
+    return gulp
+        .src(`${srcFolder}/img/**/*.*`)
+        .pipe(
+            ifPlugin(
+                isBuild,
+                imagemin([
+                    imagemin.gifsicle({ interlaced: true }),
+                    imagemin.mozjpeg({ quality: 80, progressive: true }),
+                    imagemin.optipng({ optimizationLevel: 5 }),
+                    imagemin.svgo({
+                        plugins: [
+                            { removeViewBox: true },
+                            { cleanupIDs: false },
+                        ],
+                    }),
+                ])
+            )
+        )
+        .pipe(gulp.dest(`${buildFolder}/img`));
 };
 
 const copyLib = () => {
-  return gulp
-    .src(`${srcFolder}/lib/**/*.*`)
-    .pipe(gulp.dest(`${buildFolder}/lib`));
-}
+    return gulp
+        .src(`${srcFolder}/lib/**/*.*`)
+        .pipe(gulp.dest(`${buildFolder}/lib`));
+};
 
 // copy fonts
 const copyFonts = () => {
-  return gulp
-    .src(`${srcFolder}/fonts/**/*.*`)
-    .pipe(gulp.dest(`${buildFolder}/fonts`));
+    return gulp
+        .src(`${srcFolder}/fonts/**/*.*`)
+        .pipe(gulp.dest(`${buildFolder}/fonts`));
 };
 
 // copy scss
 const copySCSS = () => {
-  return gulp
-    .src(`${srcFolder}/scss/**/*.*`)
-    .pipe(gulp.dest(`${buildFolder}/scss`));
+    return gulp
+        .src(`${srcFolder}/scss/**/*.*`)
+        .pipe(gulp.dest(`${buildFolder}/scss`));
 };
 
 // copy js
 const copyJS = () => {
-  return gulp
-    .src(`${srcFolder}/js/**/*.*`)
-    .pipe(gulp.dest(`${buildFolder}/js`));
+    return gulp
+        .src(`${srcFolder}/js/**/*.*`)
+        .pipe(gulp.dest(`${buildFolder}/js`));
 };
 
 // copy images
 const copyImages = () => {
-  return gulp
-    .src(`${srcFolder}/img/**/*.*`)
-    .pipe(gulp.dest(`${buildFolder}/img`));
+    return gulp
+        .src(`${srcFolder}/img/**/*.*`)
+        .pipe(gulp.dest(`${buildFolder}/img`));
 };
 
 // server
 const server = () => {
-  browsersync.init({
-    server: {
-      baseDir: `${buildFolder}/`,
-    },
-    notify: false,
-    port: 3000,
-  });
+    browsersync.init({
+        server: {
+            baseDir: `${buildFolder}/`,
+        },
+        notify: false,
+        port: 3000,
+    });
 };
 
 // copy html
 const html = () => {
-  return gulp
-    .src(`${srcFolder}/*.html`)
-    .pipe(
-      plumber(
-        notify.onError({
-          title: "HTML",
-          message: "Error <%= error.message %>",
-        })
-      )
-    )
-    .pipe(fileinclude())
-    .pipe(replace(/@img\//g, "./img/"))
-    .pipe(gulp.dest(`${buildFolder}`))
-    .pipe(browsersync.stream());
+    return gulp
+        .src(`${srcFolder}/*.html`)
+        .pipe(
+            plumber(
+                notify.onError({
+                    title: "HTML",
+                    message: "Error <%= error.message %>",
+                })
+            )
+        )
+        .pipe(fileinclude())
+        .pipe(replace(/@img\//g, "./img/"))
+        .pipe(gulp.dest(`${buildFolder}`))
+        .pipe(browsersync.stream());
 };
 
 // scss
 const scss = () => {
-  return gulp
-    .src(`${srcFolder}/scss/style.scss`, { sourcemaps: !isBuild })
-    .pipe(
-      plumber(
-        notify.onError({
-          title: "SCSS",
-          message: "Error <%= error.message %>",
-        })
-      )
-    )
-    .pipe(
-      sass({
-        outputStyle: "compressed",
-      })
-    )
-    .pipe(
-      ifPlugin(
-        isBuild,
-        autoprefixer({
-          grid: true,
-          overrideBrowserslist: ["last 3 versions"],
-          cascade: true,
-        })
-      )
-    )
-    // .pipe(
-    //   rename({
-    //     extname: "style.css",
-    //   })
-    // )
-    .pipe(gulp.dest(`${buildFolder}/css`))
-    .pipe(browsersync.stream());
+    return (
+        gulp
+            .src(`${srcFolder}/scss/style.scss`, { sourcemaps: !isBuild })
+            .pipe(
+                plumber(
+                    notify.onError({
+                        title: "SCSS",
+                        message: "Error <%= error.message %>",
+                    })
+                )
+            )
+            .pipe(
+                sass({
+                    outputStyle: "compressed",
+                })
+            )
+            .pipe(
+                ifPlugin(
+                    isBuild,
+                    autoprefixer({
+                        grid: true,
+                        overrideBrowserslist: ["last 3 versions"],
+                        cascade: true,
+                    })
+                )
+            )
+            // .pipe(
+            //   rename({
+            //     extname: "style.css",
+            //   })
+            // )
+            .pipe(gulp.dest(`${buildFolder}/css`))
+            .pipe(browsersync.stream())
+    );
 };
 const scss2 = () => {
-  return gulp
-    .src(`${srcFolder}/scss/bootstrap.scss`, { sourcemaps: !isBuild })
-    .pipe(
-      plumber(
-        notify.onError({
-          title: "SCSS",
-          message: "Error <%= error.message %>",
-        })
-      )
-    )
-    .pipe(
-      sass({
-        outputStyle: "compressed",
-      })
-    )
-    .pipe(
-      ifPlugin(
-        isBuild,
-        autoprefixer({
-          grid: true,
-          overrideBrowserslist: ["last 3 versions"],
-          cascade: true,
-        })
-      )
-    )
-    .pipe(
-      rename({
-        extname: ".min.css",
-      })
-    )
-    .pipe(gulp.dest(`${buildFolder}/css`))
-    .pipe(browsersync.stream());
+    return gulp
+        .src(`${srcFolder}/scss/bootstrap.scss`, { sourcemaps: !isBuild })
+        .pipe(
+            plumber(
+                notify.onError({
+                    title: "SCSS",
+                    message: "Error <%= error.message %>",
+                })
+            )
+        )
+        .pipe(
+            sass({
+                outputStyle: "compressed",
+            })
+        )
+        .pipe(
+            ifPlugin(
+                isBuild,
+                autoprefixer({
+                    grid: true,
+                    overrideBrowserslist: ["last 3 versions"],
+                    cascade: true,
+                })
+            )
+        )
+
+        .pipe(
+            rename({
+                extname: ".min.css",
+            })
+        )
+        .pipe(gulp.dest(`${buildFolder}/css`))
+        .pipe(browsersync.stream());
 };
 // js
 const js = () => {
-  return gulp
-    .src(`${srcFolder}/js/main.js`, { sourcemaps: !isBuild })
-    .pipe(
-      plumber(
-        notify.onError({
-          title: "JS",
-          message: "Error <%= error.message %>",
-        })
-      )
-    )
-    .pipe(
-      webpack({
-        mode: isBuild ? "production" : "development",
-        output: {
-          filename: "main.js",
-        },
-      })
-    )
-    .pipe(gulp.dest(`${buildFolder}/js`))
-    .pipe(browsersync.stream());
+    return gulp
+        .src(`${srcFolder}/js/main.js`, { sourcemaps: !isBuild })
+        .pipe(
+            plumber(
+                notify.onError({
+                    title: "JS",
+                    message: "Error <%= error.message %>",
+                })
+            )
+        )
+        .pipe(
+            webpack({
+                mode: isBuild ? "production" : "development",
+                output: {
+                    filename: "main.js",
+                },
+            })
+        )
+        .pipe(gulp.dest(`${buildFolder}/js`))
+        .pipe(browsersync.stream());
 };
 
 // copy all files
 const copyFiles = async () => {
-  copyImg();
-  copySCSS();
-  copyJS();
-  copyImages();
-  copyFonts();
-  copyLib();
+    copyImg();
+    copySCSS();
+    copyJS();
+    copyImages();
+    copyFonts();
+    copyLib();
 };
 
 // watcher
 const watcher = () => {
-  gulp.watch(`${srcFolder}/img/**/*.*`, copyImg);
-  gulp.watch(`${srcFolder}/**/*.html`, html);
-  gulp.watch(`${srcFolder}/scss/**/*.scss`, scss);
-  gulp.watch(`${srcFolder}/scss/bootstrap.scss`, scss2);
-  gulp.watch(`${srcFolder}/js/**/*.js`, js);
-  gulp.watch(`${srcFolder}/img/**/*.*`, copyImages);
+    gulp.watch(`${srcFolder}/img/**/*.*`, copyImg);
+    gulp.watch(`${srcFolder}/**/*.html`, html);
+    gulp.watch(`${srcFolder}/scss/**/*.scss`, scss);
+    gulp.watch(`${srcFolder}/scss/bootstrap.scss`, scss2);
+    gulp.watch(`${srcFolder}/js/**/*.js`, js);
+    gulp.watch(`${srcFolder}/img/**/*.*`, copyImages);
 };
 
 // zip archives
 const zip = async () => {
-  deleteAsync(`./${rootFolder}.zip`);
-  return gulp
-    .src(`${buildFolder}/**/*.*`, {})
-    .pipe(
-      plumber(
-        notify.onError({
-          title: "ZIP",
-          message: "Error <%= error.message %>",
-        })
-      )
-    )
-    .pipe(gulpZip(`${rootFolder}.zip`))
-    .pipe(gulp.dest("./"));
+    deleteAsync(`./${rootFolder}.zip`);
+    return gulp
+        .src(`${buildFolder}/**/*.*`, {})
+        .pipe(
+            plumber(
+                notify.onError({
+                    title: "ZIP",
+                    message: "Error <%= error.message %>",
+                })
+            )
+        )
+        .pipe(gulpZip(`${rootFolder}.zip`))
+        .pipe(gulp.dest("./"));
 };
 
 const mainTasks = gulp.parallel(copyFiles, html, scss, scss2, js);
